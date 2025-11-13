@@ -18,7 +18,7 @@ async def root(request: Request):
 @app.post("/scrape", response_class=HTMLResponse)
 async def scrape_post(request: Request, url: str = Form(...), selector: str = Form(None)):
     data = await scraper.scrape_website(url, selector)
-    return templates.TemplateResponse(request, "index.html", {"results": data})
+    return templates.TemplateResponse(request, "results.html", {"results": data})
 
 @app.get("/health")
 async def health_check():
