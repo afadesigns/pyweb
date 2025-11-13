@@ -18,9 +18,10 @@ classifiers = [
 ]
 dependencies = [
     "aiohttp",
-    "beautifulsoup4",
+    "selectolax",
     "cachetools",
     "click",
+    "uvloop",
 ]
 
 [project.scripts]
