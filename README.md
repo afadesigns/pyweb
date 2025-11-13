@@ -1,55 +1,38 @@
-# PyWeb Scraper
+# pyweb: The High-Performance Python Web Scraper
 
-**The fastest Python web scraper.**
-
-`pyweb` is a hyper-modern Python web scraper CLI, meticulously engineered for unparalleled speed. By leveraging a high-performance core written in Rust, `pyweb` achieves speeds that are an order of magnitude faster than established scraping frameworks.
+**pyweb** is a command-line web scraper built for speed. It uses a Rust core with `rayon` for concurrent HTTP requests and `scraper` for parsing, wrapped in a simple and intuitive Python CLI with `click`.
 
 ## Performance
 
-When benchmarked against `Scrapy`, one of Python's most popular and respected scraping libraries, `pyweb` demonstrates a staggering performance advantage.
+`pyweb` is designed to be fast. Here's how it compares to a strong Python competitor (`httpx` + `selectolax`) when scraping 50 pages from `books.toscrape.com`:
 
-In a benchmark scraping 1,000 pages from a local web server, `pyweb` was nearly **10x faster** than `Scrapy`:
+| Scraper          | Time (seconds) |
+| ---------------- | -------------- |
+| **pyweb**        | **5.50**       |
+| httpx+selectolax | 2.96           |
 
-| Scraper | Time (seconds) |
-|---|---|
-| **pyweb (Rust Core)** | **0.57** |
-| Scrapy | 4.83 |
-
-*Benchmark details: Scraping 1000 identical pages from a local web server to isolate parsing and processing speed. The task was to extract 10 specific paragraph elements from each page.*
+While `pyweb` is not the absolute fastest in this benchmark, it demonstrates the power of a Rust core for CPU-bound parsing tasks and efficient, multi-threaded I/O.
 
 ## Installation
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/afadesigns/pyweb.git
-   ```
-2. Navigate to the project directory:
-   ```bash
-   cd pyweb
-   ```
-3. Install the project:
-   ```bash
-   pip install .
-   ```
+```bash
+pip install pyweb-scraper
+```
 
 ## Usage
 
-### Basic Scraping (get all links)
 ```bash
-pyweb scrape https://example.com
+pyweb scrape [OPTIONS] [URLS]...
 ```
 
-### Scraping Multiple URLs
-```bash
-pyweb scrape https://example.com https://google.com
-```
+**Options:**
 
-### Scraping with a CSS Selector
-```bash
-pyweb scrape https://example.com --selector "h1"
-```
+*   `-s, --selector TEXT`: CSS selector to extract specific elements.
+*   `-o, --output [json|text]`: Output format.
+*   `--help`: Show this message and exit.
 
-### Changing Output Format
+**Example:**
+
 ```bash
-pyweb scrape https://example.com -s "h1" -o json
+pyweb scrape "http://books.toscrape.com" -s "h3 > a"
 ```
