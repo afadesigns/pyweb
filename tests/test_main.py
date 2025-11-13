@@ -16,3 +16,10 @@ async def test_scrape_post():
     assert response.status_code == 200
     assert "text/html" in response.headers["content-type"]
     assert "Example Domain" in response.text
+
+@pytest.mark.asyncio
+async def test_health_check():
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
+        response = await ac.get("/health")
+    assert response.status_code == 200
+    assert response.json() == {"status": "ok"}

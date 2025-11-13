@@ -2,7 +2,7 @@ from fastapi import FastAPI, Request, Form
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
-from scraper import scrape_website
+from scraper import scraper
 
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
@@ -17,5 +17,9 @@ async def root(request: Request):
 
 @app.post("/scrape", response_class=HTMLResponse)
 async def scrape_post(request: Request, url: str = Form(...), selector: str = Form(None)):
-    data = await scrape_website(url, selector)
+    data = await scraper.scrape_website(url, selector)
     return templates.TemplateResponse(request, "index.html", {"results": data})
+
+@app.get("/health")
+async def health_check():
+    return {"status": "ok"}
