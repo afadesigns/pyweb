@@ -13,11 +13,11 @@ def cli():
 @click.option('--output', '-o', type=click.Choice(['json', 'text']), default='text', help='Output format.')
 def scrape(urls, selector, output):
     """Scrapes one or more websites and extracts data."""
-    results = []
-    with click.progressbar(urls, label='Scraping URLs') as bar:
-        for url in bar:
-            result = run_scrape(url, selector)
-            results.append(result)
+    if not urls:
+        click.echo("Please provide at least one URL to scrape.")
+        return
+
+    results = run_scrape(list(urls), selector)
 
     for result in results:
         if 'error' in result:

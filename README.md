@@ -12,37 +12,29 @@ A hyper modern Python web scraper CLI.
    ```bash
    cd pyweb
    ```
-3. Create a virtual environment:
+3. Install the project:
    ```bash
-   uv venv
-   ```
-4. Activate the virtual environment:
-   ```bash
-   source .venv/bin/activate
-   ```
-5. Install the dependencies:
-   ```bash
-   uv pip install -r requirements.txt
+   pip install .
    ```
 
 ## Usage
 
 ### Basic Scraping (get all links)
 ```bash
-python cli.py scrape https://example.com
+pyweb scrape https://example.com
 ```
 
 ### Scraping Multiple URLs
 ```bash
-python cli.py scrape https://example.com https://google.com
+pyweb scrape https://example.com https://google.com
 ```
 
 ### Scraping with a CSS Selector
 ```bash
-python cli.py scrape https://example.com --selector "h1"
+pyweb scrape https://example.com --selector "h1"
 ```
 
 ### Changing Output Format
 ```bash
-python cli.py scrape https://example.com -s "h1" -o json
+pyweb scrape https://example.com -s "h1" -o json
 ```

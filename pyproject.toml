@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pyweb-scraper"
+version = "0.1.0"
+authors = [
+  { name="afadesigns", email="afa@afadesigns.com" },
+]
+description = "A hyper modern Python web scraper CLI"
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "aiohttp",
+    "beautifulsoup4",
+    "cachetools",
+    "click",
+]
+
+[project.scripts]
+pyweb = "cli:cli"
