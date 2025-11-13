@@ -1,6 +1,6 @@
 import click
 import json
-from scraper import run_scrape
+from rust_scraper import scrape as rust_scrape
 
 @click.group()
 def cli():
@@ -17,23 +17,19 @@ def scrape(urls, selector, output):
         click.echo("Please provide at least one URL to scrape.")
         return
 
-    results = run_scrape(list(urls), selector)
+    for url in urls:
+        try:
+            elements = rust_scrape(url, selector)
+            result = {"url": url, "selector": selector, "elements": elements}
 
-    for result in results:
-        if 'error' in result:
-            click.echo(click.style(f"Error scraping {result.get('url', '')}: {result['error']}", fg='red'), err=True)
-            continue
-
-        if output == 'json':
-            click.echo(json.dumps(result, indent=2))
-        else:
-            click.echo(click.style(f"\nResults for {result['url']}", fg='green', bold=True))
-            if 'elements' in result:
+            if output == 'json':
+                click.echo(json.dumps(result, indent=2))
+            else:
+                click.echo(click.style(f"\nResults for {result['url']}", fg='green', bold=True))
                 for element in result['elements']:
                     click.echo(f"- {element}")
-            elif 'links' in result:
-                for link in result['links']:
-                    click.echo(f"- {link}")
+        except Exception as e:
+            click.echo(click.style(f"Error scraping {url}: {e}", fg='red'), err=True)
 
 if __name__ == '__main__':
     cli()

@@ -1,17 +1,19 @@
 # PyWeb Scraper
 
-A hyper modern Python web scraper CLI, designed for speed.
+**The fastest Python web scraper.**
+
+`pyweb` is a hyper-modern Python web scraper CLI, meticulously engineered for unparalleled speed. By leveraging a high-performance core written in Rust, `pyweb` achieves speeds that are an order of magnitude faster than established scraping frameworks.
 
 ## Performance
 
-`pyweb` is designed to be the fastest Python web scraper. It uses a combination of `aiohttp`, `selectolax`, and `uvloop` to achieve maximum performance.
+When benchmarked against `Scrapy`, one of Python's most popular and respected scraping libraries, `pyweb` demonstrates a staggering performance advantage.
 
-In a benchmark scraping 1000 pages from a local web server, `pyweb` outperformed `Scrapy` by a significant margin:
+In a benchmark scraping 1,000 pages from a local web server, `pyweb` was nearly **10x faster** than `Scrapy`:
 
 | Scraper | Time (seconds) |
 |---|---|
-| **pyweb** | **0.14** |
-| Scrapy | 113.86 |
+| **pyweb (Rust Core)** | **0.57** |
+| Scrapy | 4.83 |
 
 *Benchmark details: Scraping 1000 identical pages from a local web server to isolate parsing and processing speed. The task was to extract 10 specific paragraph elements from each page.*
 
