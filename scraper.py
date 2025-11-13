@@ -2,6 +2,7 @@ import aiohttp
 from bs4 import BeautifulSoup
 import logging
 from cachetools import TTLCache
+import asyncio
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -26,7 +27,7 @@ class Scraper:
                     soup = BeautifulSoup(content, "html.parser")
 
                     if selector:
-                        elements = [element.text for element in soup.select(selector)]
+                        elements = [element.text.strip() for element in soup.select(selector)]
                         result = {"url": url, "selector": selector, "elements": elements}
                     else:
                         links = [a["href"] for a in soup.find_all("a", href=True)]
@@ -40,3 +41,6 @@ class Scraper:
             return {"error": f"An unexpected error occurred: {str(e)}"}
 
 scraper = Scraper()
+
+def run_scrape(url: str, selector: str = None):
+    return asyncio.run(scraper.scrape_website(url, selector))

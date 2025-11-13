@@ -1,6 +1,6 @@
 # PyWeb Scraper
 
-A hyper modern Python web scraper using FastAPI, Requests, and BeautifulSoup.
+A hyper modern Python web scraper CLI.
 
 ## Installation
 
@@ -27,10 +27,17 @@ A hyper modern Python web scraper using FastAPI, Requests, and BeautifulSoup.
 
 ## Usage
 
-1. Start the FastAPI server:
-   ```bash
-   uvicorn main:app --reload
-   ```
-2. Open your browser and navigate to `http://127.0.0.1:8000`.
-3. To scrape a website, use the `/scrape` endpoint with a `url` query parameter:
-   `http://127.0.0.1:8000/scrape?url=https://www.google.com`
+### Basic Scraping (get all links)
+```bash
+python cli.py scrape https://example.com
+```
+
+### Scraping with a CSS Selector
+```bash
+python cli.py scrape https://example.com --selector "h1"
+```
+
+### Changing Output Format
+```bash
+python cli.py scrape https://example.com -s "h1" -o json
+```
