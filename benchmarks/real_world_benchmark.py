@@ -15,13 +15,13 @@ BASE_URL = "http://books.toscrape.com/catalogue/page-{}.html"
 RUNS = 50  # 50 pages
 SELECTOR = "h3 > a"
 
-async def run_benchmark():
+async def run_benchmark(concurrency):
     """Main async function to run the real-world benchmarks."""
     urls = [BASE_URL.format(i) for i in range(1, RUNS + 1)]
     
     # --- pyweb Benchmark ---
     start_time = timeit.default_timer()
-    await scrape_urls_concurrent(urls, SELECTOR)
+    await scrape_urls_concurrent(urls, SELECTOR, concurrency)
     pyweb_time = timeit.default_timer() - start_time
     
     # --- httpx Benchmark ---
@@ -31,13 +31,14 @@ async def run_benchmark():
 
     print("\n--- Real-World Benchmark Results ---")
     print(f"Scraping {RUNS} pages from books.toscrape.com")
-    print(f"pyweb (async rust): {pyweb_time:.4f} seconds")
+    print(f"pyweb (concurrency={concurrency}): {pyweb_time:.4f} seconds")
     print(f"httpx+selectolax: {httpx_time:.4f} seconds")
 
 @click.command()
-def main():
+@click.option('--concurrency', '-c', default=100, help='Number of concurrent requests for pyweb.')
+def main(concurrency):
     """Sync wrapper to run the async benchmark."""
-    asyncio.run(run_benchmark())
+    asyncio.run(run_benchmark(concurrency))
 
 if __name__ == "__main__":
     main()

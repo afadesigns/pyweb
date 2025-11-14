@@ -8,9 +8,9 @@ def cli():
     """A CLI for scraping websites."""
     pass
 
-async def scrape_async(urls, selector, output):
+async def scrape_async(urls, selector, output, concurrency):
     """Asynchronous scraping logic."""
-    results = await scrape_urls_concurrent(list(urls), selector)
+    results = await scrape_urls_concurrent(list(urls), selector, concurrency)
 
     for i, url in enumerate(urls):
         elements = results[i]
@@ -31,12 +31,13 @@ async def scrape_async(urls, selector, output):
 @click.argument('urls', nargs=-1)
 @click.option('--selector', '-s', help='CSS selector to extract specific elements.')
 @click.option('--output', '-o', type=click.Choice(['json', 'text']), default='text', help='Output format.')
-def scrape(urls, selector, output):
+@click.option('--concurrency', '-c', default=50, help='Number of concurrent requests.')
+def scrape(urls, selector, output, concurrency):
     """Scrapes one or more websites and extracts data concurrently."""
     if not urls:
         click.echo("Please provide at least one URL to scrape.")
         return
-    asyncio.run(scrape_async(urls, selector, output))
+    asyncio.run(scrape_async(urls, selector, output, concurrency))
 
 if __name__ == '__main__':
     cli()

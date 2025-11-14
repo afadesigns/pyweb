@@ -3,9 +3,14 @@ use pyo3::wrap_pyfunction;
 use scraper::{Html, Selector};
 use reqwest;
 use futures::future::join_all;
+use std::sync::Arc;
+use tokio::sync::Semaphore;
+use std::time::Duration;
 
-async fn fetch_and_parse(client: &reqwest::Client, url: String, selector_str: String) -> Result<Vec<String>, reqwest::Error> {
-    let body = client.get(&url).send().await?.text().await?;
+async fn fetch_and_parse(client: &reqwest::Client, url: String, selector_str: String) -> Result<Vec<String>, String> {
+    let response = client.get(&url).send().await.map_err(|e| e.to_string())?;
+    let bytes = response.bytes().await.map_err(|e| e.to_string())?;
+    let body = String::from_utf8_lossy(&bytes).to_string();
     
     let result = tokio::task::spawn_blocking(move || {
         let fragment = Html::parse_document(&body);
@@ -18,24 +23,35 @@ async fn fetch_and_parse(client: &reqwest::Client, url: String, selector_str: St
     Ok(result)
 }
 
-async fn scrape_all_urls(urls: Vec<String>, selector: String) -> PyResult<Vec<Vec<String>>> {
-    let client = reqwest::Client::new();
+async fn scrape_all_urls(urls: Vec<String>, selector: String, concurrency: usize) -> PyResult<Vec<Vec<String>>> {
+    let client = reqwest::Client::builder()
+        .tcp_nodelay(true)
+        .timeout(Duration::from_millis(5000))
+        .connect_timeout(Duration::from_millis(2000))
+        .build()
+        .map_err(|e| pyo3::exceptions::PyValueError::new_err(e.to_string()))?;
+
+    let semaphore = Arc::new(Semaphore::new(concurrency));
     
     let futures = urls.into_iter().map(|url| {
         let client = client.clone();
         let selector = selector.clone();
-        async move {
+        let semaphore = semaphore.clone();
+        
+        tokio::spawn(async move {
+            let _permit = semaphore.acquire().await.unwrap();
             fetch_and_parse(&client, url, selector).await
-        }
+        })
     });
 
-    let results = join_all(futures).await;
+    let task_results = join_all(futures).await;
 
     let mut final_results = Vec::new();
-    for result in results {
-        match result {
-            Ok(elements) => final_results.push(elements),
-            Err(e) => return Err(pyo3::exceptions::PyConnectionError::new_err(e.to_string())),
+    for task_result in task_results {
+        match task_result {
+            Ok(Ok(elements)) => final_results.push(elements),
+            Ok(Err(e)) => return Err(pyo3::exceptions::PyConnectionError::new_err(e)),
+            Err(e) => return Err(pyo3::exceptions::PyRuntimeError::new_err(e.to_string())),
         }
     }
 
@@ -43,9 +59,9 @@ async fn scrape_all_urls(urls: Vec<String>, selector: String) -> PyResult<Vec<Ve
 }
 
 #[pyfunction]
-fn scrape_urls_concurrent(py: Python, urls: Vec<String>, selector: String) -> PyResult<&PyAny> {
+fn scrape_urls_concurrent(py: Python, urls: Vec<String>, selector: String, concurrency: usize) -> PyResult<&PyAny> {
     pyo3_asyncio::tokio::future_into_py(py, async move {
-        scrape_all_urls(urls, selector).await
+        scrape_all_urls(urls, selector, concurrency).await
     })
 }
 
