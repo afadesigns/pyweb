@@ -14,10 +14,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4.1.7
+        uses: actions/checkout@v5.0.0
 
       - name: Set up Python
-        uses: actions/setup-python@v5.1.0
+        uses: actions/setup-python@v6.0.0
         with:
           python-version: "3.12"
 
@@ -28,7 +28,7 @@ jobs:
         run: python -m build
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2.0.6
+        uses: softprops/action-gh-release@v2.4.2
         with:
           files: |
             dist/*.whl
