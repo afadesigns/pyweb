@@ -1,6 +1,8 @@
 # pyweb: The World's Fastest Python Web Scraper
 
 [![CI](https://github.com/afadesigns/pyweb/actions/workflows/ci.yml/badge.svg)](https://github.com/afadesigns/pyweb/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Built with Rust](https://img.shields.io/badge/built%20with-Rust-orange.svg)](https://www.rust-lang.org/)
 
 **pyweb** is a command-line web scraper engineered for one purpose: **to be the fastest Python web scraper in existence**. It is a demonstration of extreme optimization, pushing the limits of what is possible by combining a high-level Python CLI with a hyper-optimized Rust core.
 
@@ -10,18 +12,11 @@ In a world of large-scale data extraction, every millisecond counts. `pyweb` was
 
 ## How It Works
 
-`pyweb` achieves its speed through a holistic optimization strategy spanning every layer of the stack:
-
-*   **Hybrid Architecture:** A user-friendly Python CLI (`click`) acts as a wrapper around a high-performance, multi-threaded scraping core written in Rust.
-*   **Asynchronous I/O:** The Rust core is built on `tokio`, a state-of-the-art asynchronous runtime, and uses the kernel's `io_uring` interface on Linux for the most efficient I/O operations possible.
-*   **Optimized HTTP and TLS:** The `reqwest` client is fine-tuned to use a pure Rust TLS implementation (`rustls`) and is forced to use HTTP/1.1 to minimize connection latency for rapid, independent requests.
-*   **Advanced Compiler Optimizations:** The Rust core is compiled with Profile-Guided Optimization (PGO), Link-Time Optimization (LTO), and native CPU-specific instruction sets to generate the most efficient machine code possible.
-*   **High-Performance Memory Management:** The system's default memory allocator is replaced with `mimalloc`, which is designed for highly concurrent applications.
-*   **Code Micro-Optimizations:** The Rust code is carefully written to eliminate unnecessary allocations and redundant work in the hot path, such as parsing CSS selectors only once.
+`pyweb` achieves its speed through a holistic, full-stack optimization strategy. For a detailed explanation of the performance engineering decisions, please see the **[Architectural Deep Dive](ARCHITECTURE.md)**.
 
 ## Performance
 
-`pyweb` is definitively the fastest Python web scraper. The final benchmark, scraping 100 pages from a local `aiohttp` server, was conducted after applying advanced OS-level network tuning (`tcp_tw_reuse`, `tcp_fin_timeout`). The results below compare `pyweb` against the best-in-class pure-Python async solution (`httpx` + `selectolax`).
+`pyweb` is definitively the fastest Python web scraper. The final benchmark, scraping 100 pages from a local `aiohttp` server, was conducted after applying advanced OS-level network tuning. The results below compare `pyweb` against the best-in-class pure-Python async solution (`httpx` + `selectolax`).
 
 | Metric                        | **pyweb (hyper-tuned async Rust)** | httpx+selectolax |
 | ----------------------------- | ---------------------------------- | ---------------- |
@@ -52,11 +47,21 @@ pyweb scrape [OPTIONS] [URLS]...
 *   `-c, --concurrency INTEGER`: Number of concurrent requests.
 *   `--help`: Show this message and exit.
 
-**Example:**
+### Examples
+
+**1. Simple Scrape:** Scrape all book titles from the first page of `books.toscrape.com`.
 
 ```bash
-# Scrape all book titles from the first page of books.toscrape.com
-pyweb scrape "http://books.toscrape.com" -s "h3 > a" -c 200
+pyweb scrape "http://books.toscrape.com" -s "h3 > a"
+```
+
+**2. Concurrent Scrape with JSON Output:** Scrape the first 5 pages concurrently and output the results as JSON.
+
+```bash
+pyweb scrape $(for i in {1..5}; do echo "http://books.toscrape.com/catalogue/page-$i.html"; done) \
+    -s ".product_pod h3 a" \
+    -c 10 \
+    -o json
 ```
 
 ## Development
