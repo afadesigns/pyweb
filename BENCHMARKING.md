@@ -25,7 +25,7 @@ The benchmark is run against a local `aiohttp` server (`benchmarks/http_server.p
 
 ### 2. Fine-Grained Measurement
 
-We measure two key metrics:
+We run a total of **100 requests** for each tool and measure two key metrics:
 
 -   **Total Execution Time:** The wall-clock time to complete all 100 requests. This is measured in Python using `timeit.default_timer()`.
 -   **Per-Request Latency:** The time taken for each individual request, from initiation to the completion of parsing. This is measured *inside* the Rust core using `std::time::Instant` for maximum precision.
@@ -40,6 +40,6 @@ The per-request latencies are collected and analyzed using `numpy` to calculate:
 
 ### 4. Competitor Fairness
 
-The competitor (`httpx` + `selectolax`) is run in the exact same environment, against the same local server, with the same concurrency settings, to ensure a fair, apples-to-apples comparison.
+The competitor (`httpx` + `selectolax`) is run in the exact same environment, against the same local server, with the same number of requests (100) and concurrency settings, to ensure a fair, apples-to-apples comparison.
 
 This rigorous methodology ensures that our benchmark results accurately reflect the performance of the `pyweb` scraper itself, free from the noise and variability of the public internet.
