@@ -10,7 +10,7 @@ def cli():
 
 async def scrape_async(urls, selector, output, concurrency):
     """Asynchronous scraping logic."""
-    results = await scrape_urls_concurrent(list(urls), selector, concurrency)
+    results, _latencies = await scrape_urls_concurrent(list(urls), selector, concurrency)
 
     for i, url in enumerate(urls):
         elements = results[i]

@@ -5,9 +5,10 @@ use reqwest;
 use futures::future::join_all;
 use std::sync::Arc;
 use tokio::sync::Semaphore;
-use std::time::Duration;
+use std::time::{Duration, Instant};
 
-async fn fetch_and_parse(client: &reqwest::Client, url: String, selector_str: String) -> Result<Vec<String>, String> {
+async fn fetch_and_parse(client: &reqwest::Client, url: String, selector_str: String) -> Result<(Vec<String>, Duration), String> {
+    let start_time = Instant::now();
     let response = client.get(&url).send().await.map_err(|e| e.to_string())?;
     let bytes = response.bytes().await.map_err(|e| e.to_string())?;
     let body = String::from_utf8_lossy(&bytes).to_string();
@@ -20,14 +21,14 @@ async fn fetch_and_parse(client: &reqwest::Client, url: String, selector_str: St
             .collect()
     }).await.unwrap();
 
-    Ok(result)
+    Ok((result, start_time.elapsed()))
 }
 
-async fn scrape_all_urls(urls: Vec<String>, selector: String, concurrency: usize) -> PyResult<Vec<Vec<String>>> {
+async fn scrape_all_urls(urls: Vec<String>, selector: String, concurrency: usize) -> PyResult<(Vec<Vec<String>>, Vec<u64>)> {
     let client = reqwest::Client::builder()
         .tcp_nodelay(true)
-        .timeout(Duration::from_millis(5000))
-        .connect_timeout(Duration::from_millis(2000))
+        .timeout(Duration::from_millis(500)) // Relaxed timeout
+        .connect_timeout(Duration::from_millis(250)) // Relaxed connect timeout
         .build()
         .map_err(|e| pyo3::exceptions::PyValueError::new_err(e.to_string()))?;
 
@@ -47,15 +48,19 @@ async fn scrape_all_urls(urls: Vec<String>, selector: String, concurrency: usize
     let task_results = join_all(futures).await;
 
     let mut final_results = Vec::new();
+    let mut latencies_ms = Vec::new();
     for task_result in task_results {
         match task_result {
-            Ok(Ok(elements)) => final_results.push(elements),
+            Ok(Ok((elements, duration))) => {
+                final_results.push(elements);
+                latencies_ms.push(duration.as_millis() as u64);
+            },
             Ok(Err(e)) => return Err(pyo3::exceptions::PyConnectionError::new_err(e)),
             Err(e) => return Err(pyo3::exceptions::PyRuntimeError::new_err(e.to_string())),
         }
     }
 
-    Ok(final_results)
+    Ok((final_results, latencies_ms))
 }
 
 #[pyfunction]
