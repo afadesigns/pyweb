@@ -10,27 +10,40 @@ The guiding principle of `pyweb` is to delegate all performance-critical work to
 
 ```mermaid
 graph TD
-    subgraph Python Interface
-        A[CLI (`click`)] --> B{`asyncio` Event Loop};
+    subgraph User Interface
+        A[Python CLI (`click`)]
+    end
+
+    subgraph Python Runtime
+        B[Asyncio Event Loop]
+    end
+    
+    subgraph FFI Bridge
+        C[`pyo3-asyncio`]
     end
 
     subgraph Rust Core (`rust_scraper.so`)
-        C{`pyo3-asyncio` Bridge} --> D[Tokio Async Runtime];
-        D --> E{Concurrency Limiter (`Semaphore`)};
+        D[Tokio Async Runtime] --> E{Concurrency Limiter (`Semaphore`)};
         E --> F[HTTP/1.1 Client (`reqwest`)];
         F --> G[TLS (`rustls`)];
         G --> H[Async I/O (`io_uring`)];
-        H --> I[OS Kernel];
-        J[HTML Parsing (`scraper`)] --> K[Memory Allocator (`mimalloc`)];
-        D --> J;
+        D --> J[HTML Parsing (`scraper`)];
+        J --> K[Memory Allocator (`mimalloc`)];
     end
 
-    B --> C;
+    subgraph OS Kernel
+        I[Linux Kernel TCP/IP Stack]
+    end
+
+    A -- Invokes --> B;
+    B -- Bridges to --> C;
+    C -- Spawns --> D;
+    H -- Syscalls --> I;
     I --> L[Internet];
 
     style A fill:#336791,stroke:#fff,stroke-width:2px,color:#fff
     style B fill:#336791,stroke:#fff,stroke-width:2px,color:#fff
-    style C fill:#b34b3e,stroke:#fff,stroke-width:2px,color:#fff
+    style C fill:#f37321,stroke:#fff,stroke-width:2px,color:#fff
     style D fill:#b34b3e,stroke:#fff,stroke-width:2px,color:#fff
     style E fill:#b34b3e,stroke:#fff,stroke-width:2px,color:#fff
     style F fill:#b34b3e,stroke:#fff,stroke-width:2px,color:#fff
@@ -38,6 +51,7 @@ graph TD
     style H fill:#b34b3e,stroke:#fff,stroke-width:2px,color:#fff
     style J fill:#b34b3e,stroke:#fff,stroke-width:2px,color:#fff
     style K fill:#b34b3e,stroke:#fff,stroke-width:2px,color:#fff
+    style I fill:#444,stroke:#fff,stroke-width:2px,color:#fff
 ```
 
 ## The Optimization Journey: A Layer-by-Layer Breakdown

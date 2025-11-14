@@ -1,3 +1,14 @@
+"""
+The definitive performance benchmark for pyweb.
+
+This script runs a controlled, local benchmark to compare the performance of `pyweb`
+against a best-in-class pure-Python competitor (`httpx` + `selectolax`).
+
+It starts a local `aiohttp` server to eliminate network latency and variability,
+then makes a series of concurrent requests to it, measuring both total execution
+time and per-request latency.
+"""
+
 import timeit
 import click
 import sys
@@ -17,12 +28,18 @@ from competitor import scrape_httpx
 LOCAL_SERVER_PORT = 8000
 BASE_URL = f"http://127.0.0.1:{LOCAL_SERVER_PORT}"
 TEST_URL = f"{BASE_URL}/test_page.html"
-RUNS = 100  # 100 pages
+RUNS = 100  # Number of pages to scrape
 SELECTOR = "h3 > a"
 LATENCY_THRESHOLD_MS = 50
 
 async def run_benchmark(pyweb_concurrency, httpx_concurrency):
-    """Main async function to run the real-world benchmarks."""
+    """
+    Main async function to run and compare the real-world benchmarks.
+
+    Args:
+        pyweb_concurrency (int): The concurrency level for the pyweb benchmark.
+        httpx_concurrency (int): The concurrency level for the httpx benchmark.
+    """
     urls = [TEST_URL] * RUNS
     
     # --- pyweb Benchmark ---
@@ -52,19 +69,21 @@ async def run_benchmark(pyweb_concurrency, httpx_concurrency):
     print(f"Total Time: {pyweb_total_time:.4f} seconds")
     print(f"Average Latency: {pyweb_avg_latency:.2f} ms")
     print(f"Jitter (Std Dev): {pyweb_jitter:.2f} ms")
-    print(f"Requests > {LATENCY_THRESHOLD_MS}ms: {pyweb_exceeding_threshold} ({pyweb_exceeding_percentage:.2f}%) ")
+    print(f"Requests > {LATENCY_THRESHOLD_MS}ms: {pyweb_exceeding_threshold} ({pyweb_exceeding_percentage:.2f}%)")
 
     print("\n--- httpx+selectolax ---")
     print(f"Total Time: {httpx_total_time:.4f} seconds")
     print(f"Average Latency: {httpx_avg_latency:.2f} ms")
     print(f"Jitter (Std Dev): {httpx_jitter:.2f} ms")
-    print(f"Requests > {LATENCY_THRESHOLD_MS}ms: {httpx_exceeding_threshold} ({httpx_exceeding_percentage:.2f}%) ")
+    print(f"Requests > {LATENCY_THRESHOLD_MS}ms: {httpx_exceeding_threshold} ({httpx_exceeding_percentage:.2f}%)")
 
 @click.command()
-@click.option('--pyweb-concurrency', '-c', default=50, help='Number of concurrent requests for pyweb.')
-@click.option('--httpx-concurrency', '-hc', default=200, help='Number of concurrent requests for httpx.')
+@click.option('--pyweb-concurrency', '-c', default=175, help='Number of concurrent requests for pyweb.')
+@click.option('--httpx-concurrency', '-hc', default=175, help='Number of concurrent requests for httpx.')
 def main(pyweb_concurrency, httpx_concurrency):
-    """Sync wrapper to run the async benchmark."""
+    """
+    Sync wrapper to start the local server and run the async benchmark.
+    """
     server_process = None
     try:
         server_path = os.path.join(os.path.dirname(__file__), 'http_server.py')

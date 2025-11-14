@@ -1,11 +1,28 @@
 # pyweb: The World's Fastest Python Web Scraper
 
 [![CI](https://github.com/afadesigns/pyweb/actions/workflows/ci.yml/badge.svg)](https://github.com/afadesigns/pyweb/actions/workflows/ci.yml)
-[![Documentation](https://github.com/afadesigns/pyweb/actions/workflows/ci.yml/badge.svg?branch=gh-pages)](https://afadesigns.github.io/pyweb/)
+[![Documentation](https://img.shields.io/badge/docs-main-blue)](https://afadesigns.github.io/pyweb/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Built with Rust](https://img.shields.io/badge/built%20with-Rust-orange.svg)](https://www.rust-lang.org/)
 
 **pyweb** is a command-line web scraper engineered for one purpose: **to be the fastest Python web scraper in existence**. It is a demonstration of extreme optimization, pushing the limits of what is possible by combining a high-level Python CLI with a hyper-optimized Rust core.
+
+## Table of Contents
+
+- [Project Status](#project-status)
+- [Demo](#demo)
+- [Why pyweb?](#why-pyweb)
+- [How It Works](#how-it-works)
+- [Performance](#performance)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Development](#development)
+- [Contributing](#contributing)
+- [License](#license)
+
+## Project Status
+
+This project is a completed performance engineering experiment. The goal was to achieve the maximum possible speed, and that goal has been met. The project is not intended for production use but serves as a case study and a benchmark.
 
 ## Demo
 
@@ -35,8 +52,8 @@ In a world of large-scale data extraction, every millisecond counts. `pyweb` was
 ## Installation
 
 ```bash
-# Coming soon to PyPI!
-# For now, please build from source (see Development section).
+# This project is a case study and is not published to PyPI.
+# Please build from source (see Development section).
 ```
 
 ## Usage
@@ -47,7 +64,7 @@ pyweb scrape [OPTIONS] [URLS]...
 
 **Options:**
 
-*   `-s, --selector TEXT`: CSS selector to extract specific elements.
+*   `-s, --selector TEXT`: CSS selector to extract specific elements. (Required)
 *   `-o, --output [json|text]`: Output format.
 *   `-c, --concurrency INTEGER`: Number of concurrent requests.
 *   `--help`: Show this message and exit.
@@ -106,7 +123,7 @@ This project uses a `Makefile` to streamline the development process. You will n
 
 ## Contributing
 
-Contributions are welcome! Please see `CONTRIBUTING.md` for details on how to submit pull requests, report issues, and run benchmarks.
+Contributions are welcome, though this project is primarily a completed experiment. Please see `CONTRIBUTING.md` for details on how to submit pull requests and report issues.
 
 ## License
 
