@@ -1,10 +1,15 @@
 # pyweb: The World's Fastest Python Web Scraper
 
 [![CI](https://github.com/afadesigns/pyweb/actions/workflows/ci.yml/badge.svg)](https://github.com/afadesigns/pyweb/actions/workflows/ci.yml)
+[![Documentation](https://github.com/afadesigns/pyweb/actions/workflows/ci.yml/badge.svg?branch=gh-pages)](https://afadesigns.github.io/pyweb/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Built with Rust](https://img.shields.io/badge/built%20with-Rust-orange.svg)](https://www.rust-lang.org/)
 
 **pyweb** is a command-line web scraper engineered for one purpose: **to be the fastest Python web scraper in existence**. It is a demonstration of extreme optimization, pushing the limits of what is possible by combining a high-level Python CLI with a hyper-optimized Rust core.
+
+## Demo
+
+![pyweb CLI Demo](.github/assets/demo.gif)
 
 ## Why pyweb?
 
