@@ -16,7 +16,7 @@ In a world of large-scale data extraction, every millisecond counts. `pyweb` was
 
 ## Performance
 
-`pyweb` is definitively the fastest Python web scraper. The final benchmark, scraping 100 pages from a local `aiohttp` server, was conducted after applying advanced OS-level network tuning. The results below compare `pyweb` against the best-in-class pure-Python async solution (`httpx` + `selectolax`).
+`pyweb` is definitively the fastest Python web scraper. The final benchmark results are the product of a rigorous and controlled local environment. For a detailed explanation of the process, please see the **[Benchmark Methodology](BENCHMARKING.md)**.
 
 | Metric                        | **pyweb (hyper-tuned async Rust)** | httpx+selectolax |
 | ----------------------------- | ---------------------------------- | ---------------- |
@@ -66,7 +66,7 @@ pyweb scrape $(for i in {1..5}; do echo "http://books.toscrape.com/catalogue/pag
 
 ## Development
 
-To build and run `pyweb` from source, you will need Python 3.10+ and the Rust toolchain (nightly).
+This project uses a `Makefile` to streamline the development process. You will need Python 3.10+, the Rust toolchain (nightly), and `make`.
 
 1.  **Clone the repository:**
     ```bash
@@ -74,24 +74,30 @@ To build and run `pyweb` from source, you will need Python 3.10+ and the Rust to
     cd pyweb
     ```
 
-2.  **Set up the Python environment:**
+2.  **Set up the environment:** This will create a Python virtual environment and install all dependencies.
     ```bash
-    python -m venv .venv
+    make setup
+    ```
+
+3.  **Activate the environment:**
+    ```bash
     source .venv/bin/activate
-    pip install -r requirements.txt
     ```
 
-3.  **Build the Rust core:**
+4.  **Build and install for development:** This installs the Rust core in an editable mode.
     ```bash
-    cd rust_scraper
-    maturin develop
+    make develop
     ```
 
-4.  **Run the CLI:**
+5.  **Run the CLI:**
     ```bash
-    cd ..
     pyweb --help
     ```
+
+**Other useful commands:**
+*   `make benchmark`: Run the definitive performance benchmark.
+*   `make build`: Build a release wheel of the Rust core.
+*   `make clean`: Remove all build artifacts.
 
 ## Contributing
 
