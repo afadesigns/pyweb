@@ -38,7 +38,7 @@ In a world of large-scale data extraction, every millisecond counts. `pyweb` was
 
 ## Performance
 
-`pyweb` is definitively the fastest Python web scraper. The final benchmark results are the product of a rigorous and controlled local environment. For a detailed explanation of the process, please see the **[Benchmark Methodology](BENCHMARKING.md)**.
+`pyweb` is definitively the fastest Python web scraper. The final benchmark consists of **100 requests** for each tool, run in a rigorous and controlled local environment. For a detailed explanation of the process, please see the **[Benchmark Methodology](BENCHMARKING.md)**.
 
 | Metric                        | **pyweb (hyper-tuned async Rust)** | httpx+selectolax |
 | ----------------------------- | ---------------------------------- | ---------------- |
