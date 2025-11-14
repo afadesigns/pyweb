@@ -7,6 +7,9 @@ use std::sync::Arc;
 use tokio::sync::Semaphore;
 use std::time::{Duration, Instant};
 
+#[global_allocator]
+static GLOBAL: mimalloc::MiMalloc = mimalloc::MiMalloc;
+
 async fn fetch_and_parse(client: &reqwest::Client, url: String, selector_str: String) -> Result<(Vec<String>, Duration), String> {
     let start_time = Instant::now();
     let response = client.get(&url).send().await.map_err(|e| e.to_string())?;

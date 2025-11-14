@@ -1,6 +1,6 @@
 [package]
 name = "rust_scraper"
-version = "0.9.0"
+version = "0.10.0"
 edition = "2021"
 
 [lib]
@@ -14,6 +14,7 @@ tokio = { version = "1", features = ["full"] }
 reqwest = { version = "0.12", default-features = false, features = ["native-tls"] }
 futures = "0.3"
 pyo3-asyncio = { version = "0.20.0", features = ["tokio-runtime"] }
+mimalloc = { version = "0.1.39", default-features = false }
 
 [profile.release]
 lto = true
