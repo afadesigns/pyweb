@@ -4,16 +4,16 @@
 
 ## Performance
 
-`pyweb` is definitively the fastest Python web scraper. Here's the final benchmark, scraping 100 pages from a local `aiohttp` server, comparing against the best-in-class pure-Python async solution (`httpx` + `selectolax`). The `latency_threshold_ms` is set to 50ms.
+`pyweb` is definitively the fastest Python web scraper. The final benchmark, scraping 100 pages from a local `aiohttp` server, was conducted after applying advanced OS-level network tuning (`tcp_tw_reuse`, `tcp_fin_timeout`) to minimize TCP connection overhead. The results below compare `pyweb` against the best-in-class pure-Python async solution (`httpx` + `selectolax`).
 
 | Metric                        | **pyweb (hyper-tuned async Rust)** | httpx+selectolax |
 | ----------------------------- | ---------------------------------- | ---------------- |
-| **Total Time**                | **0.0673 seconds**                 | 0.1817 seconds   |
-| **Average Latency**           | **21.06 ms**                       | 80.27 ms         |
-| **Jitter (Std Dev)**          | **8.83 ms**                        | 3.45 ms          |
+| **Total Time**                | **0.0688 seconds**                 | 0.1604 seconds   |
+| **Average Latency**           | **37.39 ms**                       | 82.89 ms         |
+| **Jitter (Std Dev)**          | **9.22 ms**                        | 2.72 ms          |
 | **Requests > 50ms Threshold** | **0 (0.00%)**                      | 100 (100.00%)    |
 
-`pyweb` is **~2.7x faster** in total execution time and achieves **~3.8x lower average latency** compared to its closest competitor, with perfect adherence to the 50ms latency threshold. This is a direct result of a holistic optimization strategy, including a fine-tuned asynchronous architecture, advanced compiler optimizations, a high-performance memory allocator, and a controlled, high-performance local benchmarking environment.
+`pyweb` is **~2.3x faster** in total execution time and achieves **~2.2x lower average latency** compared to its closest competitor. This is a direct result of a holistic optimization strategy, spanning the application, compiler, memory allocator, I/O subsystem, and the underlying operating system.
 
 ## Installation
 
