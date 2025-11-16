@@ -1,5 +1,5 @@
 """
-The main command-line interface for pyweb.
+The main command-line interface for pyru.
 
 This module provides a CLI for scraping websites using a hyper-optimized Rust core.
 It uses the `click` library to define commands and options.

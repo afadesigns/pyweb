@@ -1,4 +1,4 @@
-# `pyweb` Benchmark Methodology
+# `pyru` Benchmark Methodology
 
 The performance claims made in this project are backed by a rigorous and transparent benchmarking methodology. This document explains how the benchmarks are conducted to ensure the results are accurate, reproducible, and fair.
 
@@ -42,4 +42,4 @@ The per-request latencies are collected and analyzed using `numpy` to calculate:
 
 The competitor (`httpx` + `selectolax`) is run in the exact same environment, against the same local server, with the same number of requests (100) and concurrency settings, to ensure a fair, apples-to-apples comparison.
 
-This rigorous methodology ensures that our benchmark results accurately reflect the performance of the `pyweb` scraper itself, free from the noise and variability of the public internet.
+This rigorous methodology ensures that our benchmark results accurately reflect the performance of the `pyru` scraper itself, free from the noise and variability of the public internet.

@@ -1,10 +1,10 @@
-# `pyweb` Architecture: A Deep Dive into Performance Engineering
+# `pyru` Architecture: A Deep Dive into Performance Engineering
 
-This document details the architectural decisions and the iterative optimization process that makes `pyweb` the fastest Python web scraper.
+This document details the architectural decisions and the iterative optimization process that makes `pyru` the fastest Python web scraper.
 
 ## Core Philosophy
 
-The guiding principle of `pyweb` is to delegate all performance-critical work to a hyper-optimized Rust core while providing a user-friendly Python interface. Python is excellent for scripting and user interfaces, but for raw, concurrent I/O and CPU-bound parsing, Rust is unparalleled.
+The guiding principle of `pyru` is to delegate all performance-critical work to a hyper-optimized Rust core while providing a user-friendly Python interface. Python is excellent for scripting and user interfaces, but for raw, concurrent I/O and CPU-bound parsing, Rust is unparalleled.
 
 ## Architectural Diagram
 
@@ -56,7 +56,7 @@ graph TD
 
 ## The Optimization Journey: A Layer-by-Layer Breakdown
 
-`pyweb`'s performance is not the result of a single trick, but a systematic optimization of every layer of the software stack.
+`pyru`'s performance is not the result of a single trick, but a systematic optimization of every layer of the software stack.
 
 ### 1. Application Layer: Rust Core
 The most significant decision was to write the performance-critical path in Rust. The `scrape_all_urls` function orchestrates the entire process, using `tokio` to manage thousands of concurrent tasks without the overhead of system threads.
@@ -72,7 +72,7 @@ We explicitly use `reqwest`'s `rustls-tls` feature. This replaces the default de
 The default system memory allocator is a general-purpose tool. We replaced it with `mimalloc`, a high-performance allocator from Microsoft designed for multi-threaded, concurrent applications. It excels at handling many small, short-lived allocations with less contention and fragmentation.
 
 ### 5. Compiler Optimizations: PGO and LTO
-- **Profile-Guided Optimization (PGO):** This is the pinnacle of compiler optimization. We compile `pyweb` in three stages:
+- **Profile-Guided Optimization (PGO):** This is the pinnacle of compiler optimization. We compile `pyru` in three stages:
     1.  An instrumented build that collects performance data.
     2.  A benchmark run that generates a detailed profile of "hot" code paths.
     3.  A final build where the compiler uses this profile to make more intelligent optimization decisions (e.g., better inlining and branch prediction).
@@ -92,4 +92,4 @@ The final step was to refine the Rust code itself to eliminate redundant work:
 - **Parse Selector Once:** The CSS selector is parsed only once and shared across all concurrent tasks using an `Arc<Selector>`.
 - **Avoid Allocations:** The HTML body is converted to a `String` with minimal allocations, and result vectors are pre-allocated with a known capacity.
 
-This relentless, full-stack approach is the secret to `pyweb`'s performance.
+This relentless, full-stack approach is the secret to `pyru`'s performance.

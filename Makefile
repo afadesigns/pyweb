@@ -21,7 +21,7 @@ develop:
 
 benchmark:
 	@echo ">>> Running performance benchmark..."
-	. $(VENV_DIR)/bin/activate && python benchmarks/real_world_benchmark.py --pyweb-concurrency 175
+	. $(VENV_DIR)/bin/activate && python benchmarks/real_world_benchmark.py --pyru-concurrency 175
 
 clean:
 	@echo ">>> Cleaning up build artifacts..."

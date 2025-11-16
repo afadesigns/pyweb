@@ -1,17 +1,17 @@
-# pyweb: The World's Fastest Python Web Scraper
+# pyru: The World's Fastest Python Web Scraper
 
-[![CI](https://github.com/afadesigns/pyweb/actions/workflows/ci.yml/badge.svg)](https://github.com/afadesigns/pyweb/actions/workflows/ci.yml)
-[![Documentation](https://img.shields.io/badge/docs-main-blue)](https://afadesigns.github.io/pyweb/)
+[![CI](https://github.com/afadesigns/pyru/actions/workflows/ci.yml/badge.svg)](https://github.com/afadesigns/pyru/actions/workflows/ci.yml)
+[![Documentation](https://img.shields.io/badge/docs-main-blue)](https://afadesigns.github.io/pyru/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Built with Rust](https://img.shields.io/badge/built%20with-Rust-orange.svg)](https://www.rust-lang.org/)
 
-**pyweb** is a command-line web scraper engineered for one purpose: **to be the fastest Python web scraper in existence**. It is a demonstration of extreme optimization, pushing the limits of what is possible by combining a high-level Python CLI with a hyper-optimized Rust core.
+**pyru** is a command-line web scraper engineered for one purpose: **to be the fastest Python web scraper in existence**. It is a demonstration of extreme optimization, pushing the limits of what is possible by combining a high-level Python CLI with a hyper-optimized Rust core.
 
 ## Table of Contents
 
 - [Project Status](#project-status)
 - [Demo](#demo)
-- [Why pyweb?](#why-pyweb)
+- [Why pyru?](#why-pyru)
 - [How It Works](#how-it-works)
 - [Performance](#performance)
 - [Installation](#installation)
@@ -26,28 +26,28 @@ This project is a completed performance engineering experiment. The goal was to 
 
 ## Demo
 
-![pyweb CLI Demo](.github/assets/demo.gif)
+![pyru CLI Demo](.github/assets/demo.gif)
 
-## Why pyweb?
+## Why pyru?
 
-In a world of large-scale data extraction, every millisecond counts. `pyweb` was built for scenarios where performance is not just a feature, but a requirement. It serves as a benchmark and a case study for building high-performance Python applications by leveraging the power of Rust for CPU-bound and I/O-bound tasks.
+In a world of large-scale data extraction, every millisecond counts. `pyru` was built for scenarios where performance is not just a feature, but a requirement. It serves as a benchmark and a case study for building high-performance Python applications by leveraging the power of Rust for CPU-bound and I/O-bound tasks.
 
 ## How It Works
 
-`pyweb` achieves its speed through a holistic, full-stack optimization strategy. For a detailed explanation of the performance engineering decisions, please see the **[Architectural Deep Dive](ARCHITECTURE.md)**.
+`pyru` achieves its speed through a holistic, full-stack optimization strategy. For a detailed explanation of the performance engineering decisions, please see the **[Architectural Deep Dive](ARCHITECTURE.md)**.
 
 ## Performance
 
-`pyweb` is definitively the fastest Python web scraper. The final benchmark consists of **100 requests** for each tool, run in a rigorous and controlled local environment. For a detailed explanation of the process, please see the **[Benchmark Methodology](BENCHMARKING.md)**.
+`pyru` is definitively the fastest Python web scraper. The final benchmark consists of **100 requests** for each tool, run in a rigorous and controlled local environment. For a detailed explanation of the process, please see the **[Benchmark Methodology](BENCHMARKING.md)**.
 
-| Metric                        | **pyweb (hyper-tuned async Rust)** | httpx+selectolax |
+| Metric                        | **pyru (hyper-tuned async Rust)** | httpx+selectolax |
 | ----------------------------- | ---------------------------------- | ---------------- |
 | **Total Time**                | **0.0659 seconds**                 | 0.1846 seconds   |
 | **Average Latency**           | **13.46 ms**                       | 92.36 ms         |
 | **Jitter (Std Dev)**          | **2.23 ms**                        | 2.48 ms          |
 | **Requests > 50ms Threshold** | **0 (0.00%)**                      | 100 (100.00%)    |
 
-`pyweb` is **~2.8x faster** in total execution time and achieves **~6.86x lower average latency** compared to its closest competitor.
+`pyru` is **~2.8x faster** in total execution time and achieves **~6.86x lower average latency** compared to its closest competitor.
 
 ## Installation
 
@@ -59,7 +59,7 @@ In a world of large-scale data extraction, every millisecond counts. `pyweb` was
 ## Usage
 
 ```bash
-pyweb scrape [OPTIONS] [URLS]...
+pyru scrape [OPTIONS] [URLS]...
 ```
 
 **Options:**
@@ -74,13 +74,13 @@ pyweb scrape [OPTIONS] [URLS]...
 **1. Simple Scrape:** Scrape all book titles from the first page of `books.toscrape.com`.
 
 ```bash
-pyweb scrape "http://books.toscrape.com" -s "h3 > a"
+pyru scrape "http://books.toscrape.com" -s "h3 > a"
 ```
 
 **2. Concurrent Scrape with JSON Output:** Scrape the first 5 pages concurrently and output the results as JSON.
 
 ```bash
-pyweb scrape $(for i in {1..5}; do echo "http://books.toscrape.com/catalogue/page-$i.html"; done) \
+pyru scrape $(for i in {1..5}; do echo "http://books.toscrape.com/catalogue/page-$i.html"; done) \
     -s ".product_pod h3 a" \
     -c 10 \
     -o json
@@ -92,8 +92,8 @@ This project uses a `Makefile` to streamline the development process. You will n
 
 1.  **Clone the repository:**
     ```bash
-    git clone https://github.com/afadesigns/pyweb.git
-    cd pyweb
+    git clone https://github.com/afadesigns/pyru.git
+    cd pyru
     ```
 
 2.  **Set up the environment:** This will create a Python virtual environment and install all dependencies.
@@ -113,7 +113,7 @@ This project uses a `Makefile` to streamline the development process. You will n
 
 5.  **Run the CLI:**
     ```bash
-    pyweb --help
+    pyru --help
     ```
 
 **Other useful commands:**

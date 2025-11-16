@@ -1,10 +1,10 @@
-# Contributing to pyweb
+# Contributing to pyru
 
-First off, thank you for considering contributing to `pyweb`. It's people like you that make open source such a great community.
+First off, thank you for considering contributing to `pyru`. It's people like you that make open source such a great community.
 
 ## Where do I go from here?
 
-If you've noticed a bug or have a feature request, please [check the issues section](https://github.com/afadesigns/pyweb/issues) and see if it's already there. If not, please create a new one!
+If you've noticed a bug or have a feature request, please [check the issues section](https://github.com/afadesigns/pyru/issues) and see if it's already there. If not, please create a new one!
 
 If you want to contribute code, please fork the repository and submit a pull request.
 
@@ -12,8 +12,8 @@ If you want to contribute code, please fork the repository and submit a pull req
 
 1.  **Fork & Clone:** Fork the repository and clone it locally.
     ```bash
-    git clone https://github.com/YOUR_USERNAME/pyweb.git
-    cd pyweb
+    git clone https://github.com/YOUR_USERNAME/pyru.git
+    cd pyru
     ```
 
 2.  **Set up the Environment:** Follow the instructions in the `Development` section of the `README.md`.
@@ -26,7 +26,7 @@ If you want to contribute code, please fork the repository and submit a pull req
     python benchmarks/real_world_benchmark.py
     ```
 
-5.  **Submit a Pull Request:** Push your changes to your fork and submit a pull request to the `main` branch of the `afadesigns/pyweb` repository. Please provide a clear description of your changes and the results of the benchmark.
+5.  **Submit a Pull Request:** Push your changes to your fork and submit a pull request to the `main` branch of the `afadesigns/pyru` repository. Please provide a clear description of your changes and the results of the benchmark.
 
 ## Code of Conduct
 

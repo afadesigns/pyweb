@@ -6,33 +6,70 @@ on:
   pull_request:
     branches: [ main ]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build_and_test:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
 
     steps:
     - uses: actions/checkout@v3
 
-    - name: Set up Python
-      uses: actions/setup-python@v3
+    - name: Python environment
+      uses: ./.github/actions/python-uv
       with:
-        python-version: '3.10'
+        python-version: ${{ matrix.python-version }}
+        dev: true
 
     - name: Set up Rust
       uses: actions-rs/toolchain@v1
       with:
-        toolchain: nightly
+        toolchain: stable
         override: true
 
-    - name: Install dependencies
+    - name: Sync dependencies
+      run: uv sync --extra dev --python ${{ matrix.python-version }}
+    - name: Lint Python
       run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
+        uv run --no-sync ruff check .
+        uv run --no-sync ruff format --check .
+
+    - name: Type check Python
+      run: uv run --no-sync mypy src
+
+    - name: Test Python
+      run: uv run --no-sync pytest
+
+    - name: Security scan with pip-audit
+      run: uv run --no-sync pip-audit
 
     - name: Build Rust core
       run: |
         cd rust_scraper
         maturin build --release
+
+    - name: Format Rust
+      run: |
+        cd rust_scraper
+        cargo fmt --check
+
+    - name: Lint Rust
+      run: |
+        cd rust_scraper
+        cargo clippy --all-targets --all-features -- -D warnings
+
+    - name: Test Rust
+      run: |
+        cd rust_scraper
+        cargo test
 
     - name: Run benchmark (as a basic test)
       run: |
@@ -49,7 +86,7 @@ jobs:
       - name: Set up Rust
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: nightly
+          toolchain: stable
           override: true
       - name: Build docs
         run: |
