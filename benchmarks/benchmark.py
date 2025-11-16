@@ -18,8 +18,8 @@ TEST_URL = f"{BASE_URL}/test_page.html"
 RUNS = 1000
 SELECTOR = "p.item"
 
-def run_pyweb_benchmark(urls, selector):
-    """Runs the benchmark for the pyweb scraper."""
+def run_pyru_benchmark(urls, selector):
+    """Runs the benchmark for the pyru scraper."""
     scrape_urls_concurrent(urls, selector)
 
 def run_scrapy_benchmark(urls, selector):
@@ -48,12 +48,12 @@ def main():
 
         urls = [TEST_URL] * RUNS
         
-        pyweb_time = timeit.timeit(lambda: run_pyweb_benchmark(urls, SELECTOR), number=1)
+        pyru_time = timeit.timeit(lambda: run_pyru_benchmark(urls, SELECTOR), number=1)
         scrapy_time = timeit.timeit(lambda: run_scrapy_benchmark(urls, SELECTOR), number=1)
         httpx_time = timeit.timeit(lambda: run_httpx_benchmark(urls, SELECTOR), number=1)
 
         print("\n--- Benchmark Results ---")
-        print(f"pyweb ({RUNS} runs): {pyweb_time:.4f} seconds")
+        print(f"pyru ({RUNS} runs): {pyru_time:.4f} seconds")
         print(f"httpx+selectolax ({RUNS} runs): {httpx_time:.4f} seconds")
         print(f"Scrapy ({RUNS} runs): {scrapy_time:.4f} seconds")
 

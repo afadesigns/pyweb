@@ -1,0 +1,3 @@
+{"version": 2, "width": 80, "height": 24, "timestamp": 1763086878, "env": {"SHELL": "/usr/bin/zsh", "TERM": "xterm-256color"}}
+[0.059941, "o", "Traceback (most recent call last):\r\n"]
+[0.060301, "o", "  File \u001b[35m\"/srv/projects/pyweb/.venv/bin/pyweb\"\u001b[0m, line \u001b[35m4\u001b[0m, in \u001b[35m<module>\u001b[0m\r\n    from cli import cli\r\n\u001b[1;35mModuleNotFoundError\u001b[0m: \u001b[35mNo module named 'cli'\u001b[0m\r\n"]

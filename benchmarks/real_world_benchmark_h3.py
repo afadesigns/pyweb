@@ -21,12 +21,12 @@ import time
 # Add project root to the Python path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from rust_scraper import scrape_urls_concurrent
+from rust_scraper import scrape_urls_concurrent_h3
 from competitor import scrape_httpx
 
 # --- Benchmark Configuration ---
 LOCAL_SERVER_PORT = 8000
-BASE_URL = f"http://127.0.0.1:{LOCAL_SERVER_PORT}"
+BASE_URL = f"https://127.0.0.1:{LOCAL_SERVER_PORT}"
 TEST_URL = f"{BASE_URL}/test_page.html"
 RUNS = 100  # Number of pages to scrape
 SELECTOR = "h3 > a"
@@ -44,7 +44,7 @@ async def run_benchmark(pyru_concurrency, httpx_concurrency):
     
     # --- pyru Benchmark ---
     start_time = timeit.default_timer()
-    _results, pyru_latencies_ms = await scrape_urls_concurrent(urls, SELECTOR, pyru_concurrency)
+    _results, pyru_latencies_ms = await scrape_urls_concurrent_h3(urls, SELECTOR, pyru_concurrency)
     pyru_total_time = timeit.default_timer() - start_time
 
     pyru_avg_latency = np.mean(pyru_latencies_ms)
@@ -87,13 +87,12 @@ def main(pyru_concurrency, httpx_concurrency):
     server_process = None
     try:
         server_path = os.path.join(os.path.dirname(__file__), 'http_server.py')
-        # server_process = subprocess.Popen([sys.executable, server_path], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        # time.sleep(5) # Give the server time to start
+        server_process = subprocess.Popen([sys.executable, server_path, "--http3"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        time.sleep(5) # Give the server time to start
         asyncio.run(run_benchmark(pyru_concurrency, httpx_concurrency))
     finally:
-        # if server_process:
-        #     server_process.terminate()
-        pass
+        if server_process:
+            server_process.terminate()
 
 if __name__ == "__main__":
     main()
