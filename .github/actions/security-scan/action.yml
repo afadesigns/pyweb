@@ -1,0 +1,32 @@
+name: "Security Scan"
+description: "Run Semgrep (SARIF) and optional CodeQL"
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Semgrep
+      uses: semgrep/semgrep-action@v1
+      with:
+        config: p/ci
+        generateSarif: true
+        output: semgrep.sarif
+    - name: Upload Semgrep SARIF
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: semgrep.sarif
+    - name: CodeQL init
+      if: inputs.enable-codeql == 'true'
+      uses: github/codeql-action/init@v3
+      with:
+        languages: python
+    - name: CodeQL autobuild
+      if: inputs.enable-codeql == 'true'
+      uses: github/codeql-action/autobuild@v3
+    - name: CodeQL analyze
+      if: inputs.enable-codeql == 'true'
+      uses: github/codeql-action/analyze@v3
+inputs:
+  enable-codeql:
+    required: false
+    default: "false"

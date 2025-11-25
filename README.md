@@ -1,41 +1,152 @@
-# pyweb: The Fastest Python Web Scraper
+pyru: The World's Fastest Python Web Scraper
 
-**pyweb** is a command-line web scraper engineered for one purpose: **to be the fastest Python web scraper in existence**, achieving sub-millisecond latency. It leverages a hyper-optimized, asynchronous Rust core built on `tokio` and a fine-tuned `reqwest` client using `rustls` to eliminate C FFI overhead and explicitly forcing HTTP/1.1 for minimal connection latency. The code is further micro-optimized to eliminate all unnecessary allocations in the hot path. Performance is further enhanced with the `mimalloc` high-performance memory allocator, native CPU-specific compiler optimizations, Profile-Guided Optimization (PGO), and the `io_uring` asynchronous I/O interface on Linux.
+[![CI](https://github.com/afadesigns/pyru/actions/workflows/ci.yml/badge.svg)](https://github.com/afadesigns/pyru/actions/workflows/ci.yml)
+[![Documentation](https://img.shields.io/badge/docs-main-blue)](https://afadesigns.github.io/pyru/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Built with Rust](https://img.shields.io/badge/built%20with-Rust-orange.svg)](https://www.rust-lang.org/)
+
+**pyru** is a command-line web scraper engineered for one purpose: **to be the fastest Python web scraper in existence**. It is a demonstration of extreme optimization, pushing the limits of what is possible by combining a high-level Python CLI with a hyper-optimized Rust core.
+
+## Table of Contents
+
+- [Project Status](#project-status)
+- [Demo](#demo)
+- [Why pyru?](#why-pyru)
+- [How It Works](#how-it-works)
+- [Performance](#performance)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Development](#development)
+- [Contributing](#contributing)
+- [License](#license)
+
+## Project Status
+
+**Important:** This project is a **completed performance engineering experiment** and is **not intended for production use**. While the goal of achieving maximum possible speed has been met, `pyru` primarily serves as a case study and a benchmark for extreme optimization techniques. Users should not deploy `pyru` in production environments.
+
+## Demo
+
+![pyru CLI Demo](.github/assets/demo.gif)
+
+## Why pyru?
+
+In a world of large-scale data extraction, every millisecond counts. `pyru` was built for scenarios where performance is not just a feature, but a requirement. It serves as a benchmark and a case study for building high-performance Python applications by leveraging the power of Rust for CPU-bound and I/O-bound tasks.
+
+## How It Works
+
+`pyru` achieves its unprecedented speed through a holistic, full-stack optimization strategy that meticulously fine-tunes every layer from the application down to the OS kernel. It leverages a high-level Python CLI for user interaction and delegates all performance-critical tasks to a hyper-optimized Rust core, ensuring maximum efficiency in concurrent I/O and CPU-bound parsing. For a detailed explanation of the performance engineering decisions, please see the **[Architectural Deep Dive](ARCHITECTURE.md)**.
 
 ## Performance
 
-`pyweb` is definitively the fastest Python web scraper. The final benchmark, scraping 100 pages from a local `aiohttp` server, was conducted after applying advanced OS-level network tuning (`tcp_tw_reuse`, `tcp_fin_timeout`) to minimize TCP connection overhead. The results below compare `pyweb` against the best-in-class pure-Python async solution (`httpx` + `selectolax`).
+`pyru` is definitively the fastest Python web scraper. The final benchmark consists of **100 requests** for each tool, run in a rigorous and controlled local environment. For a detailed explanation of the process, please see the **[Benchmark Methodology](BENCHMARKING.md)**.
 
-| Metric                        | **pyweb (hyper-tuned async Rust)** | httpx+selectolax |
+| Metric                        | **pyru (hyper-tuned async Rust)** | httpx+selectolax |
 | ----------------------------- | ---------------------------------- | ---------------- |
 | **Total Time**                | **0.0659 seconds**                 | 0.1846 seconds   |
 | **Average Latency**           | **13.46 ms**                       | 92.36 ms         |
 | **Jitter (Std Dev)**          | **2.23 ms**                        | 2.48 ms          |
 | **Requests > 50ms Threshold** | **0 (0.00%)**                      | 100 (100.00%)    |
 
-`pyweb` is **~2.8x faster** in total execution time and achieves **~6.86x lower average latency** compared to its closest competitor. This is a direct result of a holistic optimization strategy, spanning the application code, compiler, memory allocator, I/O subsystem, TLS implementation, HTTP protocol, and the underlying operating system.
+`pyru` is **~2.8x faster** in total execution time and achieves **~6.86x lower average latency** compared to its closest competitor.
 
 ## Installation
 
-```bash
-pip install pyweb-scraper
-```
+# This project is a case study and is not published to PyPI.
+# Please build from source (see Development section).
 
 ## Usage
 
 ```bash
-pyweb scrape [OPTIONS] [URLS]...
+pyru scrape [OPTIONS] [URLS]...
 ```
 
 **Options:**
 
-*   `-s, --selector TEXT`: CSS selector to extract specific elements.
+*   `-s, --selector TEXT`: CSS selector to extract specific elements. (Required)
 *   `-o, --output [json|text]`: Output format.
 *   `-c, --concurrency INTEGER`: Number of concurrent requests.
 *   `--help`: Show this message and exit.
 
-**Example:**
+### Examples
+
+**1. Simple Scrape:** Scrape all book titles from the first page of `books.toscrape.com`.
 
 ```bash
-pyweb scrape "http://books.toscrape.com" -s "h3 > a" -c 200
+pyru scrape "http://books.toscrape.com" -s "h3 > a"
 ```
+
+**2. Concurrent Scrape with JSON Output:** Scrape the first 5 pages concurrently and output the results as JSON.
+
+```bash
+pyru scrape $(for i in {1..5}; do echo "http://books.toscrape.com/catalogue/page-$i.html"; done) \
+    -s ".product_pod h3 a" \
+    -c 10 \
+    -o json
+```
+
+## Development
+
+This project uses a `Makefile` to streamline the development process. You will need Python 3.10+, the Rust toolchain (nightly), and `make`.
+
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/afadesigns/pyru.git
+    cd pyru
+    ```
+
+2.  **Set up the environment:** This will create a Python virtual environment and install all dependencies.
+    ```bash
+    make setup
+    ```
+
+3.  **Activate the environment:**
+    ```bash
+    source .venv/bin/activate
+    ```
+
+4.  **Build and install for development:** This installs the Rust core in an editable mode.
+    ```bash
+    make develop
+    ```
+
+5.  **Run the CLI:**
+    ```bash
+    pyru --help
+    ```
+
+**Other useful commands:**
+*   `make benchmark`: Run the definitive performance benchmark.
+*   `make build`: Build a release wheel of the Rust core.
+*   `make clean`: Remove all build artifacts.
+
+## Testing
+
+To ensure code quality and correctness, `pyru` includes unit and integration tests.
+
+*   **Run Unit Tests:**
+    ```bash
+    pytest
+    ```
+
+*   **Run Integration Tests:** (If applicable, specify path or command)
+    ```bash
+    # Example: zsh tests/integration_test.zsh
+    ```
+
+## Contributing
+
+Contributions are welcome, though this project is primarily a completed experiment. Please see `CONTRIBUTING.md` for details on how to submit pull requests and report issues.
+
+## Future Plans / Roadmap
+
+While `pyru` is a completed experiment in its current form, potential future work could include:
+
+*   **HTTP/3 Integration:** Fully resolve the build issues with the experimental HTTP/3 client (`quinn`) to allow for benchmarking and integration of the next-generation HTTP protocol.
+*   **Broader OS Support:** Investigate and implement `io_uring` alternatives for non-Linux operating systems to maintain high-performance I/O across platforms.
+*   **Advanced Parsing Capabilities:** Explore integration with more sophisticated HTML parsing libraries or custom parsing logic for complex scraping scenarios.
+*   **Proxy Support:** Add robust proxy configuration options for distributed scraping.
+*   **Rate Limiting and Retries:** Implement more advanced, configurable rate-limiting and retry mechanisms within the Rust core.
+
+## License
+
+This project is licensed under the MIT License. See the `LICENSE` file for details.

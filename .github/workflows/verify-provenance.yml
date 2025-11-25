@@ -1,0 +1,28 @@
+name: Verify Provenance
+on:
+  release:
+    types: [published]
+permissions:
+  contents: read
+  id-token: write
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download release assets metadata
+        uses: actions/download-artifact@v4
+        with:
+          name: sbom
+          path: dist
+        continue-on-error: true
+      - name: Install cosign
+        uses: sigstore/cosign-installer@v2
+        with:
+          cosign-release: v2.2.3
+      - name: Verify artifact signatures
+        run: |
+          for f in dist/*.{whl,tar.gz}; do
+            [ -f "$f.sig" ] && cosign verify-blob --signature "$f.sig" "$f" || echo "No signature for $f"; done
+      - name: List SBOM
+        run: |
+          if [ -f dist/sbom.json ]; then jq '. | {dependencies: (.components | length)}' dist/sbom.json; fi

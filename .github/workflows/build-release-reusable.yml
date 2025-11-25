@@ -1,0 +1,90 @@
+name: Reusable Python Release
+on:
+  workflow_call:
+    inputs:
+      python-version:
+        required: true
+        type: string
+      extras:
+        required: false
+        type: string
+      build-dir:
+        required: false
+        type: string
+        default: dist
+      build-docker:
+        required: false
+        type: boolean
+        default: true
+      docker-image:
+        required: false
+        type: string
+        default: ghcr.io/${{ github.repository }}:${{ github.ref_name }}
+    secrets:
+      PYPI_API_TOKEN:
+        required: false
+jobs:
+  build_release:
+    permissions:
+      contents: write
+      packages: write
+      id-token: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Python environment
+        uses: ./.github/actions/python-uv
+        with:
+          python-version: ${{ inputs.python-version }}
+          dev: true
+          extras: ${{ inputs.extras }}
+      - name: Build package
+        run: uv build --sdist --wheel --outdir ${{ inputs.build-dir }}
+      - name: Install cosign
+        uses: sigstore/cosign-installer@v2
+        with:
+          cosign-release: v2.2.3
+      - name: Sign artifacts
+        env:
+          COSIGN_EXPERIMENTAL: "1"
+        run: |
+          for f in ${{ inputs.build-dir }}/*.{whl,tar.gz}; do
+            cosign sign-blob --yes "$f" --output-signature "$f.sig"
+          done
+      - name: Generate SBOM
+        uses: anchore/sbom-action@v0.17.6
+        with:
+          path: ${{ inputs.build-dir }}
+          output-file: ${{ inputs.build-dir }}/sbom.json
+      - name: Generate SLSA provenance
+        uses: slsa-framework/slsa-github-generator@v1
+        with:
+          attestation_subject_path: "${{ inputs.build-dir }}/*.whl"
+      - name: Trivy filesystem scan
+        uses: aquasecurity/trivy-action@v0.20.0
+        with:
+          scan-type: 'fs'
+          path: .
+          severity: 'CRITICAL,HIGH'
+          ignore-unfixed: true
+          format: 'table'
+          exit-code: '0'
+      - name: Publish to PyPI (optional)
+        if: secrets.PYPI_API_TOKEN != ''
+        uses: pypa/gh-action-pypi-publish@v1.9.0
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_API_TOKEN }}
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2.0.6
+        with:
+          files: |
+            ${{ inputs.build-dir }}/*.whl
+            ${{ inputs.build-dir }}/*.tar.gz
+            ${{ inputs.build-dir }}/*.sig
+            ${{ inputs.build-dir }}/sbom.json
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

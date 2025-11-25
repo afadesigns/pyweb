@@ -3,7 +3,7 @@ requires = ["maturin>=0.14,<0.15"]
 build-backend = "maturin"
 
 [project]
-name = "pyweb-scraper"
+name = "pyru-scraper"
 version = "0.3.0"
 authors = [
   { name="afadesigns", email="afa@afadesigns.com" },
@@ -19,7 +19,12 @@ classifiers = [
 ]
 dependencies = [
     "click",
+    "toml",
 ]
 
+[tool.maturin]
+manifest-path = "rust_scraper/Cargo.toml"
+module-name = "rust_scraper"
+
 [project.scripts]
-pyweb = "cli:cli"
+pyru = "cli:cli"
