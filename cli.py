@@ -1,16 +1,10 @@
-"""
-The main command-line interface for pyru.
-
-This module provides a CLI for scraping websites using a hyper-optimized Rust core.
-It uses the `click` library to define commands and options.
-"""
-
 import click
 import json
 import asyncio
 import toml
 from pathlib import Path
 import sys
+
 from rust_scraper import scrape_urls_concurrent
 
 @click.group()
@@ -79,9 +73,34 @@ def scrape(urls, selector, output, concurrency, config):
         sys.exit(1)
 
     if not urls:
-        click.echo("Please provide at least one URL to scrape, either via arguments or a config file.", err=True)
+        click.echo("Please provide at least one URL to scrape, either via arguments, a config file, or an input file.", err=True)
         sys.exit(1)
-    asyncio.run(scrape_async(urls, selector, output, concurrency))
+
+    try:
+        asyncio.run(scrape_async(urls, selector, output, concurrency))
+    except Exception as e:
+        error_message = str(e)
+        if "HTTP Status Error" in error_message:
+            click.echo(click.style(f"HTTP Error: {error_message.replace('HTTP Status Error: ', '')}", fg='red'), err=True)
+        elif "Network error" in error_message or "HTTP/3 Client Error" in error_message:
+            click.echo(click.style(f"Network Error: {error_message.replace('Network error: ', '').replace('HTTP/3 Client Error: ', '')}", fg='red'), err=True)
+        elif "Parsing Error" in error_message:
+            click.echo(click.style(f"Parsing Error: {error_message.replace('Parsing Error: ', '')}", fg='red'), err=True)
+        elif "Invalid Selector" in error_message:
+            click.echo(click.style(f"Invalid Selector Error: {error_message.replace('Invalid Selector: ', '')}", fg='red'), err=True)
+        elif "Tokio Join Error" in error_message:
+            click.echo(click.style(f"Internal Runtime Error: A background task failed unexpectedly. Details: {error_message.replace('Tokio Join Error: ', '')}", fg='red'), err=True)
+        elif "Runtime Error" in error_message:
+            click.echo(click.style(f"Runtime Error: An unexpected error occurred in the Rust core. Details: {error_message.replace('Runtime Error: ', '')}", fg='red'), err=True)
+        elif "URL Parse Error" in error_message:
+            click.echo(click.style(f"URL Parsing Error: {error_message.replace('URL Parse Error: ', '')}", fg='red'), err=True)
+        elif "HTTP Build Error" in error_message:
+            click.echo(click.style(f"HTTP Request Build Error: {error_message.replace('HTTP Build Error: ', '')}", fg='red'), err=True)
+        elif "IO Error" in error_message:
+            click.echo(click.style(f"I/O Error: {error_message.replace('IO Error: ', '')}", fg='red'), err=True)
+        else:
+            click.echo(click.style(f"An unexpected error occurred: {error_message}", fg='red'), err=True)
+        sys.exit(1)
 
 if __name__ == '__main__':
     cli()
