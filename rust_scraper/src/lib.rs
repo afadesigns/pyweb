@@ -224,14 +224,16 @@ async fn scrape_all_urls_h3(
     
     client_crypto.alpn_protocols = vec![b"h3".to_vec()];
 
-    let client_config = quinn::ClientConfig::new(Arc::new(quinn::crypto::rustls::QuicClientConfig::try_from(client_crypto).unwrap()));
-    let mut client_config = client_config.clone();
-    client_config.set_timeout(Some(Duration::from_secs(5)));
+    let mut transport_config = quinn::TransportConfig::default();
+    transport_config.max_idle_timeout(Some(quinn::IdleTimeout::try_from(Duration::from_secs(5)).unwrap()));
 
-    let mut endpoint = quinn::Endpoint::client("[::]:0".parse().unwrap())
+    let mut client_config = quinn::ClientConfig::new(Arc::new(quinn::crypto::rustls::QuicClientConfig::try_from(client_crypto).unwrap()));
+    client_config.transport_config(Arc::new(transport_config));
+
+    let endpoint = quinn::Endpoint::client("[::]:0".parse().unwrap())
         .map_err(|e| pyo3::exceptions::PyValueError::new_err(e.to_string()))?;
+    let mut endpoint = endpoint.clone();
     endpoint.set_default_client_config(client_config);
-    endpoint.set_timeout(Some(Duration::from_secs(5)));
 
     let selector = Arc::new(
         Selector::parse(&selector_str)

@@ -1,0 +1,8 @@
+[scrape]
+urls = [
+    "http://books.toscrape.com/catalogue/page-1.html",
+    "http://books.toscrape.com/catalogue/page-2.html",
+]
+selector = ".product_pod h3 a"
+output = "text"
+concurrency = 10
