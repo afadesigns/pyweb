@@ -125,3 +125,5 @@ dmypy.json
 .pyre/
 .codex/
 rust_scraper/.cargo/
+.genkit/
+get-pip.py
