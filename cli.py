@@ -53,7 +53,8 @@ async def scrape_async(urls, selector, output, concurrency):
 @click.option('--output', '-o', type=click.Choice(['json', 'text']), default='text', help='Output format.')
 @click.option('--concurrency', '-c', type=int, default=50, help='Number of concurrent requests.')
 @click.option('--config', '-C', type=click.Path(exists=True, dir_okay=False, path_type=Path), help='Path to a TOML configuration file.')
-def scrape(urls, selector, output, concurrency, config):
+@click.option('--input-file', '-i', type=click.Path(exists=True, dir_okay=False, path_type=Path), help='Path to a file containing URLs to scrape, one per line.')
+def scrape(urls, selector, output, concurrency, config, input_file):
     """
     Scrapes one or more websites and extracts data concurrently.
 
@@ -72,16 +73,33 @@ def scrape(urls, selector, output, concurrency, config):
     output = output if output != 'text' else config_options.get("scrape", {}).get("output", 'text') # 'text' is default in click
     concurrency = concurrency if concurrency != 50 else config_options.get("scrape", {}).get("concurrency", 50)
     config_urls = config_options.get("scrape", {}).get("urls", [])
-    urls = urls if urls else tuple(config_urls)
+
+    file_urls = []
+    if input_file:
+        try:
+            with open(input_file, 'r') as f:
+                file_urls = [line.strip() for line in f if line.strip()]
+        except IOError as e:
+            click.echo(click.style(f"Error reading input file {input_file}: {e}", fg='red'), err=True)
+            sys.exit(1)
+
+    # Determine final list of URLs: CLI args > Input file > Config file
+    final_urls = []
+    if urls:
+        final_urls = list(urls)
+    elif file_urls:
+        final_urls = file_urls
+    elif config_urls:
+        final_urls = config_urls
 
     if selector is None:
         click.echo(click.style("Error: Missing option '--selector' / '-s'.", fg='red'), err=True)
         sys.exit(1)
 
-    if not urls:
-        click.echo("Please provide at least one URL to scrape, either via arguments or a config file.", err=True)
+    if not final_urls:
+        click.echo("Please provide at least one URL to scrape, either via arguments, a config file, or an input file.", err=True)
         sys.exit(1)
-    asyncio.run(scrape_async(urls, selector, output, concurrency))
+    asyncio.run(scrape_async(tuple(final_urls), selector, output, concurrency))
 
 if __name__ == '__main__':
     cli()
