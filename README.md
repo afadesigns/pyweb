@@ -1,4 +1,4 @@
-# pyru: The World's Fastest Python Web Scraper
+pyru: The World's Fastest Python Web Scraper
 
 [![CI](https://github.com/afadesigns/pyru/actions/workflows/ci.yml/badge.svg)](https://github.com/afadesigns/pyru/actions/workflows/ci.yml)
 [![Documentation](https://img.shields.io/badge/docs-main-blue)](https://afadesigns.github.io/pyru/)
@@ -51,7 +51,8 @@ In a world of large-scale data extraction, every millisecond counts. `pyru` was 
 
 ## Installation
 
-`pyru` is not published to PyPI as it is a case study rather than a production library. To use or develop `pyru`, you must build it from source. Please follow the instructions in the [Development](#development) section to set up your environment and build the project.
+# This project is a case study and is not published to PyPI.
+# Please build from source (see Development section).
 
 ## Usage
 
