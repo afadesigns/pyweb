@@ -42,4 +42,14 @@ The per-request latencies are collected and analyzed using `numpy` to calculate:
 
 The competitor (`httpx` + `selectolax`) is run in the exact same environment, against the same local server, with the same number of requests (100) and concurrency settings, to ensure a fair, apples-to-apples comparison.
 
+## How to Run Benchmarks
+
+To reproduce the benchmark results, ensure you have the `pyru` development environment set up (as described in `CONTRIBUTING.md`). Then, execute the following command from the project root:
+
+```bash
+make benchmark
+```
+
+The benchmarks were conducted using Python 3.10.x and the stable Rust toolchain (version 1.xx.x at the time of the last benchmark run). The 50ms latency threshold was chosen as a practical upper bound for acceptable response times in high-performance web scraping scenarios, aiming for sub-second total completion times.
+
 This rigorous methodology ensures that our benchmark results accurately reflect the performance of the `pyru` scraper itself, free from the noise and variability of the public internet.

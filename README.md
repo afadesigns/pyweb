@@ -22,7 +22,7 @@
 
 ## Project Status
 
-This project is a completed performance engineering experiment. The goal was to achieve the maximum possible speed, and that goal has been met. The project is not intended for production use but serves as a case study and a benchmark.
+**Important:** This project is a **completed performance engineering experiment** and is **not intended for production use**. While the goal of achieving maximum possible speed has been met, `pyru` primarily serves as a case study and a benchmark for extreme optimization techniques. Users should not deploy `pyru` in production environments.
 
 ## Demo
 
@@ -34,7 +34,7 @@ In a world of large-scale data extraction, every millisecond counts. `pyru` was 
 
 ## How It Works
 
-`pyru` achieves its speed through a holistic, full-stack optimization strategy. For a detailed explanation of the performance engineering decisions, please see the **[Architectural Deep Dive](ARCHITECTURE.md)**.
+`pyru` achieves its unprecedented speed through a holistic, full-stack optimization strategy that meticulously fine-tunes every layer from the application down to the OS kernel. It leverages a high-level Python CLI for user interaction and delegates all performance-critical tasks to a hyper-optimized Rust core, ensuring maximum efficiency in concurrent I/O and CPU-bound parsing. For a detailed explanation of the performance engineering decisions, please see the **[Architectural Deep Dive](ARCHITECTURE.md)**.
 
 ## Performance
 
@@ -51,10 +51,7 @@ In a world of large-scale data extraction, every millisecond counts. `pyru` was 
 
 ## Installation
 
-```bash
-# This project is a case study and is not published to PyPI.
-# Please build from source (see Development section).
-```
+`pyru` is not published to PyPI as it is a case study rather than a production library. To use or develop `pyru`, you must build it from source. Please follow the instructions in the [Development](#development) section to set up your environment and build the project.
 
 ## Usage
 
@@ -121,9 +118,33 @@ This project uses a `Makefile` to streamline the development process. You will n
 *   `make build`: Build a release wheel of the Rust core.
 *   `make clean`: Remove all build artifacts.
 
+## Testing
+
+To ensure code quality and correctness, `pyru` includes unit and integration tests.
+
+*   **Run Unit Tests:**
+    ```bash
+    pytest
+    ```
+
+*   **Run Integration Tests:** (If applicable, specify path or command)
+    ```bash
+    # Example: zsh tests/integration_test.zsh
+    ```
+
 ## Contributing
 
 Contributions are welcome, though this project is primarily a completed experiment. Please see `CONTRIBUTING.md` for details on how to submit pull requests and report issues.
+
+## Future Plans / Roadmap
+
+While `pyru` is a completed experiment in its current form, potential future work could include:
+
+*   **HTTP/3 Integration:** Fully resolve the build issues with the experimental HTTP/3 client (`quinn`) to allow for benchmarking and integration of the next-generation HTTP protocol.
+*   **Broader OS Support:** Investigate and implement `io_uring` alternatives for non-Linux operating systems to maintain high-performance I/O across platforms.
+*   **Advanced Parsing Capabilities:** Explore integration with more sophisticated HTML parsing libraries or custom parsing logic for complex scraping scenarios.
+*   **Proxy Support:** Add robust proxy configuration options for distributed scraping.
+*   **Rate Limiting and Retries:** Implement more advanced, configurable rate-limiting and retry mechanisms within the Rust core.
 
 ## License
 

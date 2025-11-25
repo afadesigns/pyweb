@@ -2,6 +2,10 @@
 
 This document details the architectural decisions and the iterative optimization process that makes `pyru` the fastest Python web scraper.
 
+## Motivation
+
+The primary motivation behind `pyru` was to push the boundaries of web scraping performance within the Python ecosystem. Recognizing the inherent limitations of Python for raw, concurrent I/O and CPU-intensive parsing, the project aimed to demonstrate how these bottlenecks could be overcome by offloading critical operations to a highly optimized Rust core. This architectural choice was driven by the desire to achieve unparalleled speed and efficiency, making `pyru` a powerful case study in high-performance application design.
+
 ## Core Philosophy
 
 The guiding principle of `pyru` is to delegate all performance-critical work to a hyper-optimized Rust core while providing a user-friendly Python interface. Python is excellent for scripting and user interfaces, but for raw, concurrent I/O and CPU-bound parsing, Rust is unparalleled.
@@ -53,6 +57,8 @@ graph TD
     style K fill:#b34b3e,stroke:#fff,stroke-width:2px,color:#fff
     style I fill:#444,stroke:#fff,stroke-width:2px,color:#fff
 ```
+
+`pyo3-asyncio` is crucial for bridging the asynchronous Python `asyncio` event loop with the Rust `tokio` async runtime, enabling seamless communication and task delegation between the two language ecosystems.
 
 ## The Optimization Journey: A Layer-by-Layer Breakdown
 
