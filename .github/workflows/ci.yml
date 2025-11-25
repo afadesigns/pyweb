@@ -12,16 +12,16 @@ concurrency:
 
 jobs:
   build_and_test:
-    runs-on: ubuntu-latest
     permissions:
       contents: read
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Python environment
       uses: ./.github/actions/python-uv
@@ -34,6 +34,16 @@ jobs:
       with:
         toolchain: stable
         override: true
+    - name: Cache Cargo
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          rust_scraper/target
+        key: ${{ runner.os }}-cargo-${{ hashFiles('rust_scraper/Cargo.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-cargo-
 
     - name: Sync dependencies
       run: uv sync --extra dev --python ${{ matrix.python-version }}
@@ -46,7 +56,14 @@ jobs:
       run: uv run --no-sync mypy src
 
     - name: Test Python
-      run: uv run --no-sync pytest
+      run: uv run --no-sync pytest --cov=src --cov-report=xml
+    - name: Upload coverage artifact
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage
+        path: coverage.xml
+        retention-days: 14
 
     - name: Security scan with pip-audit
       run: uv run --no-sync pip-audit
@@ -76,13 +93,37 @@ jobs:
         source .venv/bin/activate
         pip install target/wheels/*.whl
         python benchmarks/real_world_benchmark.py
+    - name: Generate SBOM
+      uses: anchore/sbom-action@v0.17.6
+      with:
+        path: .
+        output-file: sbom.json
+    - name: Upload SBOM
+      uses: actions/upload-artifact@v4
+      with:
+        name: sbom
+        path: sbom.json
+        retention-days: 14
 
-  deploy_docs:
+  security_scan:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - name: Security scan
+        uses: ./.github/actions/security-scan
+        with:
+          enable-codeql: true
+
+deploy_docs:
     needs: build_and_test
+    permissions:
+      contents: write
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up Rust
         uses: actions-rs/toolchain@v1
         with:

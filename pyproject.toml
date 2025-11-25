@@ -21,5 +21,9 @@ dependencies = [
     "click",
 ]
 
+[tool.maturin]
+manifest-path = "rust_scraper/Cargo.toml"
+module-name = "rust_scraper"
+
 [project.scripts]
 pyru = "cli:cli"
