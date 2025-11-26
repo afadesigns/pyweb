@@ -21,15 +21,15 @@ jobs:
         python-version: ["3.11", "3.12"]
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4.1.7
+        uses: actions/checkout@v6.0.0
 
       - name: Set up Python
-        uses: actions/setup-python@v5.1.0
+        uses: actions/setup-python@v6.1.0
         with:
           python-version: ${{ matrix.python-version }}
 
       - name: Cache dependencies
-        uses: actions/cache@v4.0.2
+        uses: actions/cache@v4.3.0
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('**/pyproject.toml') }}
@@ -59,7 +59,7 @@ jobs:
 
       - name: Upload coverage to Codecov
         if: runner.os == 'Linux'
-        uses: codecov/codecov-action@v4.5.0
+        uses: codecov/codecov-action@v5.5.1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: ./coverage.xml
@@ -72,13 +72,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4.1.7
+        uses: actions/checkout@v6.0.0
 
       - name: Set up Rust
         uses: dtolnay/rust-toolchain@stable
 
       - name: Cache cargo dependencies
-        uses: actions/cache@v4.0.2
+        uses: actions/cache@v4.3.0
         with:
           path: |
             ~/.cargo/bin/
@@ -109,18 +109,18 @@ jobs:
       security-events: write
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4.1.7
+        uses: actions/checkout@v6.0.0
 
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3.25.11
+        uses: github/codeql-action/init@v4
         with:
           languages: python, go
 
       - name: Autobuild
-        uses: github/codeql-action/autobuild@v3.25.11
+        uses: github/codeql-action/autobuild@v4
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3.25.11
+        uses: github/codeql-action/analyze@v4
 
       - name: Semgrep
         uses: semgrep/semgrep-action@v2.5.0
@@ -135,14 +135,14 @@ jobs:
       image-tag: ${{ steps.build.outputs.image-tag }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4.1.7
+        uses: actions/checkout@v6.0.0
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3.3.0
+        uses: docker/setup-buildx-action@v3.11.1
 
       - name: Build Docker image
         id: build
-        uses: docker/build-push-action@v6.1.0
+        uses: docker/build-push-action@v6.18.0
         with:
           context: .
           push: false
@@ -155,7 +155,7 @@ jobs:
     needs: [build-docker]
     steps:
       - name: Scan for vulnerabilities
-        uses: aquasecurity/trivy-action@0.24.0
+        uses: aquasecurity/trivy-action@0.33.1
         with:
           image-ref: 'pyweb:latest'
           format: 'template'
@@ -164,7 +164,7 @@ jobs:
           severity: 'CRITICAL,HIGH'
 
       - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: 'trivy-results.sarif'
 
@@ -174,10 +174,10 @@ jobs:
     needs: [test-python, test-rust]
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4.1.7
+        uses: actions/checkout@v6.0.0
 
       - name: Set up Python
-        uses: actions/setup-python@v5.1.0
+        uses: actions/setup-python@v6.1.0
         with:
           python-version: "3.12"
 
@@ -192,7 +192,7 @@ jobs:
           cyclonedx-py --install-dir . --output sbom.json
 
       - name: Upload SBOM
-        uses: actions/upload-artifact@v4.3.3
+        uses: actions/upload-artifact@v5.0.0
         with:
           name: sbom
           path: sbom.json
